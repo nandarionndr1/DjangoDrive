@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Home Page</title>
+    </head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+{% load staticfiles %}
+
+    <link rel="stylesheet" href="{% static "res/font-awesome-4.7.0/css/font-awesome.min.css" %}" type="text/css">
+    <link rel="stylesheet" href="{% static "res/ba.css" %}">
+    <link rel="stylesheet" href="{% static "res/gr.css" %}">
+    <style>
+       .custom-menu {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    text-align: left;
+    border-radius: 5px;
+}
+.custom-menu div{
+
+    list-style: none;
+    padding-left: 0;
+}
+.custom-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+
+    list-style: none;
+
+}
+.custom-menu li:hover {
+    background-color: #DEF;
+
+}
+    </style>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span id="span1" class="close">&times;</span>
+          <center>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="uploadFolder">
+                <h2 style="margin: 0px">Create a new Folder</h2>
+                <br>
+
+                <label>Name</label>
+                <input type="text" class="group" style="display: inline-block;" placeholder="New folder name." name="foldername">
+                <br><br>
+                <label>Description</label>
+                <input type="text" class="group" style="display: inline-block" placeholder="Folder description." name="folderdesc">
+                <br><br>
+                <button class="button-src" style="display: inline-block" type="submit">Create</button>
+            </form>
+          </center>
+        </div>
+    </div>
+<!-- NEW CONTENT X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X -->
+    <div id="rename" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span id="span3" class="close">&times;</span>
+          <center>
+            <form action="Rename" method="POST">
+                <input type="hidden" id="fileType" name="fileType" value="">
+                <input type="hidden" id="fileId" name="fileId" value="">
+                <h2 style="margin: 0px">Rename Folder</h2>
+                <br>
+                <label>Name</label>
+                <center><input type="text" class="inpt" id="filenm" name="filenm" value="default"></center>
+                <br>
+                <label>Description</label>
+                <center><input type="text" class="inpt" id="newFd" name="filedesc" value="default"></center>
+                <br><br>
+                <button class="button-src" style="display: inline-block" type="submit">Update</button>
+            </form>
+          </center>
+        </div>
+    </div>
+    <body>
+        <div class="template">
+            <div class="action-bar">
+                <div class="col-3" style="display: inline-block">
+                    <h2 style="margin: 0px">Django Drive</h2>
+                </div>
+                <div class="col-3" style="text-align: right; display: inline-block">
+                     <img src="{% static 'assets/fuckboi.png' %}"  class="img-circle" width="25" height="25">
+
+                </div>
+
+            </div>
+
+            <br><br>
+
+        <div class="container" id="cont">
+            <main class="content">
+                <div class="row"  style="padding:0px;margin:0px;background-color: #5a6c89; ">
+                    <form action="" method="post" enctype="multipart/form-data" style="display:inline-block">
+                        {% csrf_token %}
+                        <input type="text" style="display:none" name="action" value="uploadFile">
+                        <div id="result">
+                            {% if msg == "ADD FUNCTION HERE LATER"  %}
+                               <script>
+                                    window.onload = function() {
+
+                                        var x = document.getElementById("snackbar");
+                                        x.className = "show";
+                                        setTimeout(function(){
+                                        x.className = x.className.replace("show", ""); }, 3000);
+                                    }
+                                </script>
+                           {% endif %}
+                        </div>
+
+                        <div class="hide" style="display: inline-block; padding: 5px; margin-left:15px;">
+                           <label style="cursor: pointer; display:inline-block">
+                               <i class="fa fa-cloud-upload fa-lg"></i> UPLOAD FILE
+                                    <input style="display: none;" type="file" id="fileSelect2" onchange="showImage(this);" name="file"/>
+                           </label>
+                        </div>
+                        <br>
+                        <button class="button-src" id="upBtn" name="submit" value="putangina" type="submit" style="display: none"> UPLOAD</button>
+                    </form>
+                        <button class="button-src" id="myBtn" name="submit" value="putangina" type="button" style="display: inline-block"> <i class="fa fa-folder-o fa-lg"></i>
+                            NEW FOLDER</button>
+<!--+++++ +++++++++++++ +++++++++++++ +++++++++++++ ++++++++ADDED +++++ +++++++++++++ +++++++++++++ +++++++++++++ ++++++++ -->
+                        <button class="button-src" id="btn3" name="submit" value="putangina" type="button" style="display: none"> <i class="fa fa-refresh fa-lg"></i>
+                            Update File</button>
+<!--+++++ +++++++++++++ +++++++++++++ +++++++++++++ ++++++++ADDED +++++ +++++++++++++ +++++++++++++ +++++++++++++ ++++++++ -->
+                        <div class="dropdown">
+                        <button class="dropbtn">YOUR DRIVE <i class="fa fa-hdd-o fa-2x"></i></button>
+                        <div class="dropdown-content">
+                            <a href="/drive/"><i class="fa fa-hdd-o" style="font-size:18px"></i>  Your Drive</a>
+
+                        </div>
+                        </div>
+
+                            <label class="dropbtn" style="display: inline-block; color: white; float:right; margin-right: 5px"></label>
+                 </div>
+                    <div class="col-6" >
+                        <div class="row" style="min-height: 50vh;">
+
+                            {% if folders is None and files is None %}
+                                <center style="color: #e8ecf2"><h1> No files in this storage</h1> <i class="fa fa-dropbox" style="font-size: 50px"></i></center>
+                            {% endif %}
+
+                            {% for folder in folders %}
+                             <div class="col-1" style="width:auto; text-align: center ">
+                                 <form method="get" action="{% url 'index' %}{{ folder.foldername }}/">
+                                    <div id="item-0{{ forloop.counter0 }}" class="item" style="display:inline-block; padding: 5px">
+                                        <img src="{% static "assets/file-ext/folder.png" %}" alt="Avatar" style="width:100px;height: 80px"><br>
+                                        <label>{{ folder.foldername }}</label>
+                                        <input type="hidden" id="item-id-0{{ forloop.counter0 }}" value="{{ folder.foldername }}">
+<!-- +++++ +++++++++++++ +++++++++++++ ++++++++Added field +++++ +++++++++++++ +++++++++++++ +++++++++++++ +++++++++++++ ++++++++-->
+                                        <input type="hidden" id="item-id-00{{ forloop.counter0 }}" value="{{ folder.folderdesc }}">
+<!-- +++++ +++++++++++++ +++++++++++++ ++++++++Added field +++++ +++++++++++++ +++++++++++++ +++++++++++++ +++++++++++++ ++++++++-->
+                                        <input type="hidden" id="item-id-0DOC{{ forloop.counter0 }}" value="{{ folder.id }}">
+                                    </div>
+                                    <a href="{% url 'index' %}{{ folder.foldername }}/" type="submit" id="btn-{{ forloop.counter0 }}" style="display:none"></a>
+                                  </form>
+                             </div>
+                              <form action="DeleteFolder" method="POST">
+                                  <input type="hidden" name="folderID" value="{{ folder.id }}">
+                                  <button type="submit" id="del-0{{ forloop.counter0 }}" style="display:none"></button>
+                              </form>
+                              <div class='custom-menu' id="custom-menu-0{{ forloop.counter0 }}">
+                                  <li data-action = "second"><i class="fa fa-trash-o" style="font-size:24px"> </i>  Delete Folder</a><br>
+                                  <li data-action = "third"><i class="fa fa-refresh" style="font-size:24px"> </i>  Update Folder</a><br>
+                                  <!-- ADDEDDDD -->
+                              </div>
+
+                              {% endfor %}
+                            {% for file in files %}
+
+                             <div class="col-1" style="width:auto; text-align: center ">
+                                     <div id="item-{{ forloop.counter0 }}" class="item" style="display:inline-block; padding: 5px">
+                                         <img src="{% static "assets/file-ext/" as baseURL %}{{ baseURL }}{{ file.get_fileExt}}.png" alt="Avatar" style="width:100px;height: 80px"><br>
+                                         <label>{{ file.get_fileName }}</label>
+                                         <input type="hidden" id="item-id-{{ forloop.counter0 }}" value="{{ file.filedesc }}">
+                                         <input type="hidden" id="item-id-DOC{{ forloop.counter0 }}" value="{{ file.id }}">
+                                     </div>
+                              </div>
+                              <form action="DeleteDocument" method="POST">
+                                  <input type="hidden" name="docid" value="{{ file.id }}">
+                                  <button type="submit" id="del-{{ forloop.counter0 }}" style="display:none"></button>
+                              </form>
+                              <form action="DownloadDocument" method="POST">
+                                  <input type="hidden" name="DL" value="{{ file.filedir }}">
+                                  <button type="submit" id="dl-{{ forloop.counter0 }}" style="display:none"></button>
+                              </form>
+                              <div class='custom-menu' id="custom-menu-{{ forloop.counter0 }}">
+                                <li data-action = "second"><i class="fa fa-trash-o" style="font-size:24px"> </i>  Delete File</a><br>
+                                <li data-action = "third"><i class="fa fa-download" style="font-size:24px"> </i>  Download File</a><br>
+                              </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer class="primary-footer">
+                <div class="container">
+                    <small>&copy; HOAMIS Community Groups Module by Mark.</small>
+                </div>
+            </footer>
+
+                <center><div id="snackbar">Allah wakbar </div></center>
+
+        </div>
+    </body>
+</html>
+
+<script>
+    {% for file in files %}
+    // Trigger action when the contexmenu is about to be shown
+    $('#item-{{ forloop.counter0 }}').bind("contextmenu", function (event) {
+        // Avoid the real one
+        event.preventDefault();
+
+        // Show contextmenu
+        $("#custom-menu-{{ forloop.counter0 }}").finish().toggle(100).
+
+        // In the right position (the mouse)
+        css({
+            top: event.pageY + "px",
+            left: event.pageX + "px"
+        });
+
+        $('#item-{{ forloop.counter0 }}').css("border-color", '#5a6c89');
+        $('#item-{{ forloop.counter0 }}').css("border-style", 'solid');
+        $('#item-{{ forloop.counter0 }}').css("border-radius", '3px');
+
+
+    });
+    {% endfor %}
+
+    {% for folder in folders %}
+    // Trigger action when the contexmenu is about to be shown
+    $('#item-0{{ forloop.counter0 }}').bind("contextmenu", function (event) {
+        // Avoid the real one
+        event.preventDefault();
+
+        // Show contextmenu
+        $("#custom-menu-0{{ forloop.counter0 }}").finish().toggle(100).
+
+        // In the right position (the mouse)
+        css({
+            top: event.pageY + "px",
+            left: event.pageX + "px"
+        });
+
+        $('#item-0{{ forloop.counter0 }}').css("border-color", '#5a6c89');
+        $('#item-0{{ forloop.counter0 }}').css("border-style", 'solid');
+        $('#item-0{{ forloop.counter0 }}').css("border-radius", '3px');
+
+
+    });
+    {% endfor %}
+// If the menu element is clicked
+
+    {% for folder in folders %}
+$("#custom-menu-0{{ forloop.counter0 }} li").click(function(){
+    // This is the triggered action name
+    switch($(this).attr("data-action")) {
+
+        case "second":
+
+            if (confirm("Are you sure!") === true) {
+
+            document.getElementById("del-0{{ forloop.counter0 }}").click();
+
+            } else {
+                txt = "Eut";
+            }
+            break;
+////////////////////////////////////////////////////////////////ADDEDDD NEW CASE//////////////////////////////////////////////////////////////////
+            case "third":
+
+            $('#fileId').val($('#item-id-0DOC{{ forloop.counter0 }}').val());
+            $('#fileType').val("folder");
+            $('#filenm').val($('#item-id-0{{ forloop.counter0 }}').val());
+            $('#newFd').val($('#item-id-00{{ forloop.counter0 }}').val());
+
+            document.getElementById("btn3").click();
+            break;
+////////////////////////////////////////////////////////////////ADDEDD NEW CASE//////////////////////////////////////////////////////////////
+
+
+    }
+
+    // Hide it AFTER the action was triggered
+    $(".custom-menu").hide(100);
+  });
+    {% endfor %}
+{% for file in files %}
+
+$("#custom-menu-{{ forloop.counter0 }} li").click(function(){
+
+    // This is the triggered action name
+    switch($(this).attr("data-action")) {
+
+        case "second":
+            if (confirm("Are you sure!") === true) {
+
+                $('#del-{{ forloop.counter0 }}').click();
+            } else {
+                txt = "Eut";
+            }
+            break;
+        case "third":
+            $('#dl-{{ forloop.counter0 }}').click();
+            break;
+
+    }
+
+    // Hide it AFTER the action was triggered
+    $(".custom-menu").hide(100);
+  });
+{% endfor %}
+// If the document is clicked somewhere
+$(document).bind("mousedown", function (e) {
+    // If the clicked element is not the menu
+    if (!$(e.target).parents(".custom-menu").length > 0) {
+        // Hide it
+        $(".custom-menu").hide(100);
+
+        $('.item').css("border-color", '');
+        $('.item').css("border-style", '');
+        $('.item').css("border-radius", '');
+    }
+});
+
+
+$(document).click(function(e){
+    if($(e.target).closest('.item').length === 0){
+        $('.item').css("border-color", '');
+        $('.item').css("border-style", '');
+        $('.item').css("border-radius", '');
+    }
+});
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementById("span1");
+
+
+////////////////// ADDEDDD ///////////////////////////////////////////////////////////// ADDEDDD ///////////////////////////////////////////
+// Get the modal
+var modal3 = document.getElementById('rename');
+
+// Get the button that opens the modal
+var btn3 = document.getElementById("btn3");
+
+var span3 = document.getElementById("span3");
+// When the user clicks the button, open the modal
+btn3.onclick = function() {
+    alert('awshet');
+    modal3.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span3.onclick = function() {
+    modal3.style.display = "none";
+}
+////////////////// ADDEDDD ///////////////////////////////////////////////////////////// ADDEDDD ///////////////////////////////////////////
+
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+////////////////// ADDEDDD ///////////////////////////////////////////////////////////// ADDEDDD ///////////////////////////////////////////
+// Get the modal
+var modal3 = document.getElementById('rename');
+
+// Get the button that opens the modal
+var btn3 = document.getElementById("btn3");
+
+var span3 = document.getElementById("span3");
+// When the user clicks the button, open the modal
+btn3.onclick = function() {
+    alert('awshet');
+    modal3.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span3.onclick = function() {
+    modal3.style.display = "none";
+}
+////////////////// ADDEDDD ///////////////////////////////////////////////////////////// ADDEDDD ///////////////////////////////////////////
+    {% for folder in folders %}
+    $('#item-0{{ forloop.counter0 }}').dblclick(function() {
+
+        document.getElementById('btn-{{ forloop.counter0 }}').click();
+        $('#btn-{{ forloop.counter0 }}').click();
+
+    });
+
+    {% endfor %}
+
+    {% for folder in folders %}
+    $('#item-0<%=i%>').click(function() {
+
+        $('.item').css("border-color", '');
+        $('.item').css("border-style", '');
+        $('.item').css("border-radius", '');
+
+        $('#item-0<%=i%>').css("border-color", '#5a6c89');
+        $('#item-0<%=i%>').css("border-style", 'solid');
+        $('#item-0<%=i%>').css("border-radius", '3px');
+
+
+    });
+    {% endfor %}
+    {% for file in files %}
+    $('#item-{{ forloop.counter0 }}').click(function() {
+
+        $('.item').css("border-color", '');
+        $('.item').css("border-style", '');
+        $('.item').css("border-radius", '');
+
+        $('#item-{{ forloop.counter0 }}').css("border-color", '#5a6c89');
+        $('#item-{{ forloop.counter0 }}').css("border-style", 'solid');
+        $('#item-{{ forloop.counter0 }}').css("border-radius", '3px');
+    });
+    {% endfor %}
+
+ function showImage(input) {
+        document.getElementById("upBtn").click();
+    }
+
+</script>
